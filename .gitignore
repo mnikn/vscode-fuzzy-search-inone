@@ -1,0 +1,33 @@
+# 编译输出
+out
+dist
+
+# 依赖目录
+node_modules
+
+# VS Code 相关文件
+.vscode-test/
+*.vsix
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 日志文件
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# TypeScript 缓存
+*.tsbuildinfo
+
+# 环境文件
+.env
+.env.local
+.env.*.local
+
+# 其他
+*.log
+*.bak
+*.swp
+*~
