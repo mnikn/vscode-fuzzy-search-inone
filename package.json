@@ -17,11 +17,11 @@
     "commands": [
       {
         "command": "fuzzySearchInOne.searchActiveEditor",
-        "title": "Fuzzy Search in Active Editor"
+        "title": "Fuzzy Search In One:Search active editor"
       },
       {
-        "command": "fuzzySearchInOne.searchWithSelection",
-        "title": "Fuzzy Search with Selection"
+        "command": "fuzzySearchInOne.searchActiveEditorWithSelection",
+        "title": "Fuzzy Search In One:Search active editor with selection"
       }
     ]
   },

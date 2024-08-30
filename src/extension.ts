@@ -20,20 +20,38 @@ const registerCommandSearchActiveEditor = (options = presetOptions) => {
   const quickPick = vscode.window.createQuickPick();
   quickPick.placeholder = 'Input the content to search';
 
+  if (options.withSelection) {
+    // quickPick.value = editor.selection.active.character.toString();
+    const selection = editor.selection;
+    const selectedText = editor.document.getText(selection);
+    // 设置 QuickPick 的初始值为选中的文本
+    quickPick.value = selectedText;
+  }
+
   // 创建一个装饰类型用于高亮当前行
   const highlightDecorationType = vscode.window.createTextEditorDecorationType({
     backgroundColor: new vscode.ThemeColor('editor.findMatchHighlightBackground'),
-    isWholeLine: true,
+    isWholeLine: false,
   });
 
   // 当输入变化时更新结果
   quickPick.onDidChangeValue(value => {
     if (value) {
       const results = fuzzysort.go(value, lines);
-      quickPick.items = results.map(result => ({
-        label: `${lines.indexOf(result.target) + 1}: ${result.target}`,
-        description: `行 ${lines.indexOf(result.target) + 1}`
-      }));
+      quickPick.items = results.map(result => {
+        return {
+          label: `${lines.indexOf(result.target) + 1}: ${result.target}`,
+          extraData: {
+            lineIndexes: result.indexes.map((i) => {
+              return {
+                start: i,
+                end: i + value.length
+              }
+            }),
+          }
+          // description: `Line: ${lines.indexOf(result.target) + 1}`
+        }
+      });
     } else {
       quickPick.items = [];
     }
@@ -43,11 +61,18 @@ const registerCommandSearchActiveEditor = (options = presetOptions) => {
   quickPick.onDidChangeActive(([item]) => {
     if (item) {
       const lineNumber = parseInt(item.label.split(':')[0]) - 1;
-      const range = new vscode.Range(lineNumber, 0, lineNumber, 0);
+      // const range = new vscode.Range(lineNumber, 0, lineNumber, 0);
+      console.log("item", item);
+      // const range = new vscode.Selection(lineNumber, 0, lineNumber, 0);
+      const range = new vscode.Selection(lineNumber, (item as any).extraData?.lineIndexes[0]?.start || 0, lineNumber, (item as any).extraData?.lineIndexes[0]?.end || 0);
+      // console.log("range", (item as any).extraData?.lineIndexes);
+      // console.log("range", range);
       editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
 
       // 高亮当前行,但不选中文本
-      editor.setDecorations(highlightDecorationType, [new vscode.Range(lineNumber, 0, lineNumber, item.label.length)]);
+      // const decorationRanges = (item as any).extraData?.lineIndexes.map((index: any) => new vscode.Range(lineNumber, index.start, lineNumber, index.end)) || [];
+      // editor.setDecorations(highlightDecorationType, decorationRanges);
+      editor.setDecorations(highlightDecorationType, [range]);
     } else {
       // 清除高亮
       editor.setDecorations(highlightDecorationType, []);
@@ -59,10 +84,9 @@ const registerCommandSearchActiveEditor = (options = presetOptions) => {
     const selectedItem = quickPick.activeItems[0];
     if (selectedItem) {
       const lineNumber = parseInt(selectedItem.label.split(':')[0]) - 1;
-      const range = new vscode.Range(lineNumber, 0, lineNumber, 0);
+      const range = new vscode.Selection(lineNumber, (selectedItem as any).extraData?.lineIndexes[0]?.start || 0, lineNumber, (selectedItem as any).extraData?.lineIndexes[0]?.end || 0);
       editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
 
-      // 将光标移动到行首,但不选中文本
       editor.selection = new vscode.Selection(range.start, range.start);
     }
     quickPick.hide();
