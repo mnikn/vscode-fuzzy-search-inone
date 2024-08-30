@@ -4,13 +4,14 @@
   "description": "在 VS Code 中进行模糊搜索",
   "version": "1.0.0",
   "engines": {
-    "vscode": "^1.9.0"
+    "vscode": "^1.90.0"
   },
   "categories": [
     "Other"
   ],
   "activationEvents": [
-    "onCommand:fuzzySearchInOne.searchActiveEditor"
+    "onCommand:fuzzySearchInOne.searchActiveEditor",
+    "onCommand:fuzzySearchInOne.searchActiveEditorWithSelection"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -28,6 +29,7 @@
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
+    "package": "vsce package",
     "watch": "tsc -watch -p ./"
   },
   "devDependencies": {

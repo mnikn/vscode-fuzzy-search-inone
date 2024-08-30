@@ -37,7 +37,15 @@ const registerCommandSearchActiveEditor = (options = presetOptions) => {
   // 当输入变化时更新结果
   quickPick.onDidChangeValue(value => {
     if (value) {
-      const results = fuzzysort.go(value, lines);
+      let results = fuzzysort.go(value, lines);
+
+      const cursorPosition = editor.selection.active.line;
+      results = (results as any).sort((a: any, b: any) => {
+        const lineA = lines.indexOf(a.target);
+        const lineB = lines.indexOf(b.target);
+        return Math.abs(lineA - cursorPosition) - Math.abs(lineB - cursorPosition);
+      });
+
       quickPick.items = results.map(result => {
         return {
           label: `${lines.indexOf(result.target) + 1}: ${result.target}`,
@@ -49,32 +57,23 @@ const registerCommandSearchActiveEditor = (options = presetOptions) => {
               }
             }),
           }
-          // description: `Line: ${lines.indexOf(result.target) + 1}`
         }
       });
+
+      quickPick.activeItems = [quickPick.items[0]];
     } else {
       quickPick.items = [];
     }
   });
 
-  // 当选择变化时跳转到相应行
   quickPick.onDidChangeActive(([item]) => {
     if (item) {
       const lineNumber = parseInt(item.label.split(':')[0]) - 1;
-      // const range = new vscode.Range(lineNumber, 0, lineNumber, 0);
-      console.log("item", item);
-      // const range = new vscode.Selection(lineNumber, 0, lineNumber, 0);
       const range = new vscode.Selection(lineNumber, (item as any).extraData?.lineIndexes[0]?.start || 0, lineNumber, (item as any).extraData?.lineIndexes[0]?.end || 0);
-      // console.log("range", (item as any).extraData?.lineIndexes);
-      // console.log("range", range);
       editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
 
-      // 高亮当前行,但不选中文本
-      // const decorationRanges = (item as any).extraData?.lineIndexes.map((index: any) => new vscode.Range(lineNumber, index.start, lineNumber, index.end)) || [];
-      // editor.setDecorations(highlightDecorationType, decorationRanges);
       editor.setDecorations(highlightDecorationType, [range]);
     } else {
-      // 清除高亮
       editor.setDecorations(highlightDecorationType, []);
     }
   });
