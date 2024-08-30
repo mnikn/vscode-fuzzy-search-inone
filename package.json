@@ -1,23 +1,23 @@
 {
-  "name": "vscode-fuzzy-search",
+  "name": "fuzzy-search-inone",
   "displayName": "VS Code Fuzzy Search",
   "description": "在 VS Code 中进行模糊搜索",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "engines": {
-    "vscode": "^1.60.0"
+    "vscode": "^1.9.0"
   },
   "categories": [
     "Other"
   ],
   "activationEvents": [
-    "onCommand:extension.fuzzySearch"
+    "onCommand:fuzzySearchInOne.searchActiveEditor"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "extension.fuzzySearch",
-        "title": "Fuzzy Search"
+        "command": "fuzzySearchInOne.searchActiveEditor",
+        "title": "Fuzzy Search In One: Search Active Editor"
       }
     ]
   },
@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@types/node": "^14.14.37",
-    "@types/vscode": "^1.60.0",
+    "@types/vscode": "^1.90.0",
     "typescript": "^4.3.5",
     "vsce": "^2.15.0"
   },

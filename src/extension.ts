@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as fuzzysort from 'fuzzysort';
 
 export function activate(context: vscode.ExtensionContext) {
-    let disposable = vscode.commands.registerCommand('extension.fuzzySearch', async () => {
+    let disposable = vscode.commands.registerCommand('fuzzySearchInOne.searchActiveEditor', async () => {
         // 获取当前打开的文档
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
@@ -23,7 +23,7 @@ export function activate(context: vscode.ExtensionContext) {
             backgroundColor: new vscode.ThemeColor('editor.findMatchHighlightBackground'),
             isWholeLine: true,
         });
-
+      
         // 当输入变化时更新结果
         quickPick.onDidChangeValue(value => {
             if (value) {
