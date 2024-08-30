@@ -46,7 +46,7 @@ const registerCommandSearchActiveEditor = (options = presetOptions) => {
         return Math.abs(lineA - cursorPosition) - Math.abs(lineB - cursorPosition);
       });
 
-      quickPick.items = results.map(result => {
+      let searchItems = results.map(result => {
         return {
           label: `${lines.indexOf(result.target) + 1}: ${result.target}`,
           extraData: {
@@ -58,7 +58,14 @@ const registerCommandSearchActiveEditor = (options = presetOptions) => {
             }),
           }
         }
-      });
+      })
+      // 使用 Set 对象来去重
+      const uniqueSearchItems = Array.from(new Set(searchItems.map(item => item.label)))
+        .map(label => searchItems.find(item => item.label === label) as any);
+      // 将去重后的结果赋值回 searchItems
+      searchItems = uniqueSearchItems;
+
+      quickPick.items = searchItems;
 
       quickPick.activeItems = [quickPick.items[0]];
     } else {
